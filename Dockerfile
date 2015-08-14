@@ -1,23 +1,22 @@
 # THIS IS A WORK IN PROGRESS!
 
 # How I'm running the container after building it:
-docker run -d --name sagetv \
-  -v /mnt/user/Media/Pictures:/media/pictures -v /mnt/user/Media/:/media/music \
-  -v /mnt/user/Media/Movies:/media/videos/movies -v /mnt/user/Media/TV\ Shows:/media/videos/tv_shows \
-  -v /mnt/user/temp/Recordings:/recordings \
-  -v /mnt/vms/docker-config/sagetv:/config \
-  -p 42024:42024 -p 7818:7818 -p 8270:8270/udp -p 31100:31100/udp -p 31099:31099 \
-  -p 16867:16867/udp -p 16869:16869/udp -p 16881:16881/udp \
-  -p 4822:4822 \
-  -p 3389:3389 -p 8080:8080 -p 8081:8081 \
-  -t coppit/sagetv
+#docker run -d --name sagetv \
+#  -v /mnt/user/Media/Pictures:/media/pictures -v /mnt/user/Media/:/media/music \
+#  -v /mnt/user/Media/Movies:/media/videos/movies -v /mnt/user/Media/TV\ Shows:/media/videos/tv_shows \
+#  -v /mnt/user/temp/Recordings:/recordings \
+#  -v /mnt/vms/docker-config/sagetv:/config \
+#  -p 42024:42024 -p 7818:7818 -p 8270:8270/udp -p 31100:31100/udp -p 31099:31099 \
+#  -p 16867:16867/udp -p 16869:16869/udp -p 16881:16881/udp \
+#  -p 4822:4822 \
+#  -p 3389:3389 -p 8080:8080 -p 8081:8081 \
+#  -t coppit/sagetv
 
-
-FROM hurricane/dockergui:x11rdp1.3
+FROM phusion/baseimage:0.9.17
 
 MAINTAINER David Coppit <david@coppit.org>
 
-ENV APP_NAME="SageTV"
+ENV APP_NAME="SageTV Media Center Server"
 
 # Use baseimage-docker's init system
 CMD ["/sbin/my_init"]
@@ -48,12 +47,6 @@ RUN set -x \
     build-essential \
     libx11-dev libxt-dev libraw1394-dev libavc1394-dev libiec61883-dev libfreetype6-dev yasm autoconf libtool
 
-# For libfaac0, needed by client build
-RUN set -x \
-  && apt-add-repository multiverse \
-  && apt-get update \
-  && apt-get install -y libfaac0
-
 # Now let's fetch down a specific version of SageTV (for reproducible builds) and build it
 RUN wget -O /files/sagetv.zip https://github.com/google/sagetv/archive/d9ed4ecbcf9cb8e8553f4fde56d345f552d8491a.zip
 
@@ -65,10 +58,6 @@ WORKDIR /files/sagetv-d9ed4ecbcf9cb8e8553f4fde56d345f552d8491a/build
 RUN set -x \
   && sed -i 's/i386/amd64/' ubuntufiles/server/DEBIAN/control \
   && sed -i 's/sun-java6-jre/oracle-java8-installer/' ubuntufiles/server/DEBIAN/control
-
-#RUN set -x \
-#  && sed -i 's/i386/amd64/' ubuntufiles/client/DEBIAN/control \
-#  && sed -i 's/sun-java6-jre/oracle-java8-installer/' ubuntufiles/client/DEBIAN/control 
 
 RUN export JDK_HOME=/usr/lib/jvm/java-8-oracle \
   && ./buildall.sh
@@ -85,7 +74,6 @@ RUN set -x \
 
 # HACK: i386 is a lie here. It's amd64.
 RUN dpkg -i sagetv-server_9.0.0_i386.deb
-#RUN dpkg -i sagetv-client_9.0.0_i386.deb
 
 RUN rm -rf /files
 

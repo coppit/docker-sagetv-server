@@ -1,5 +1,5 @@
-docker-sagetv
--------------
+docker-sagetv-server
+--------------------
 
 ***WORK IN PROGRESS***
 
