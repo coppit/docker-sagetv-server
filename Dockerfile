@@ -8,8 +8,6 @@
 #  -v /mnt/vms/docker-config/sagetv:/config \
 #  -p 42024:42024 -p 7818:7818 -p 8270:8270/udp -p 31100:31100/udp -p 31099:31099 \
 #  -p 16867:16867/udp -p 16869:16869/udp -p 16881:16881/udp \
-#  -p 4822:4822 \
-#  -p 3389:3389 -p 8080:8080 -p 8081:8081 \
 #  -t coppit/sagetv-server
 
 FROM phusion/baseimage:0.9.17
@@ -83,8 +81,5 @@ EXPOSE 31100 31099
 
 # Hauppage extender (all UDP)
 EXPOSE 16867 16869 16881
-
-# For RDP and Guacamole
-EXPOSE 3389 8080 8081
 
 CMD /opt/sagetv/server/startsage && sleep infinity
