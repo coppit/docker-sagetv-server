@@ -1,7 +1,7 @@
 # THIS IS A WORK IN PROGRESS!
 
 # How I'm running the container after building it:
-#docker run -d --name sagetv \
+#docker run -d --name sagetv-server \
 #  -v /mnt/user/Media/Pictures:/media/pictures -v /mnt/user/Media/:/media/music \
 #  -v /mnt/user/Media/Movies:/media/videos/movies -v /mnt/user/Media/TV\ Shows:/media/videos/tv_shows \
 #  -v /mnt/user/temp/Recordings:/recordings \
@@ -10,7 +10,7 @@
 #  -p 16867:16867/udp -p 16869:16869/udp -p 16881:16881/udp \
 #  -p 4822:4822 \
 #  -p 3389:3389 -p 8080:8080 -p 8081:8081 \
-#  -t coppit/sagetv
+#  -t coppit/sagetv-server
 
 FROM phusion/baseimage:0.9.17
 
@@ -18,17 +18,11 @@ MAINTAINER David Coppit <david@coppit.org>
 
 ENV APP_NAME="SageTV Media Center Server"
 
-# Use baseimage-docker's init system
-CMD ["/sbin/my_init"]
-
 ENV DEBIAN_FRONTEND noninteractive
 
 # Speed up APT
 RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
   && echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache
-
-# Remove built-in Java 7
-RUN apt-get purge -y openjdk-\* icedtea\*
 
 # Auto-accept Oracle JDK license
 RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
@@ -77,6 +71,8 @@ RUN dpkg -i sagetv-server_9.0.0_i386.deb
 
 RUN rm -rf /files
 
+WORKDIR /
+
 VOLUME ["/recordings", "/media", "/config"]
 
 # Client (TCP 42024 for connecting, TCP 7818 for streaming, UDP 8270 for finding servers)
@@ -91,16 +87,4 @@ EXPOSE 16867 16869 16881
 # For RDP and Guacamole
 EXPOSE 3389 8080 8081
 
-# User/Group Id gui app will be executed as
-ENV USER_ID=0
-ENV GROUP_ID=0
-
-# Default resolution
-ENV WIDTH=1280
-ENV HEIGHT=720
-
-# Otherwise RDP rendering of the UI doesn't work right.
-# Disabled... Not needed for x11rdp1.3?
-#RUN sed -i 's/java -D/java -Dsun.java2d.xrender=false -D/' /opt/sagetv/server/startsagecore
-
-COPY startapp.sh /startapp.sh
+CMD /opt/sagetv/server/startsage && sleep infinity
