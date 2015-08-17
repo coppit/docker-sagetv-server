@@ -7,7 +7,7 @@ network-based tuners like the [SiliconDust HDHomerun](https://www.silicondust.co
 
 **THIS IS A WORK IN PROGRESS**
 
-See [this thread](http://forums.sagetv.com/forums/showthread.php?p=575447#post575447) for details.
+See [this thread](https://goo.gl/0wdnY0) for details.
 
 Usage
 =====
