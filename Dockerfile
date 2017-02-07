@@ -10,7 +10,7 @@
 #  -p 16867:16867/udp -p 16869:16869/udp -p 16881:16881/udp \
 #  -t coppit/sagetv-server
 
-FROM phusion/baseimage:0.9.17
+FROM phusion/baseimage:0.9.19
 
 MAINTAINER David Coppit <david@coppit.org>
 
